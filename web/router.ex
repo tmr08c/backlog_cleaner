@@ -21,6 +21,14 @@ defmodule BacklogCleaner.Router do
     get "/", PageController, :index
   end
 
+  scope "/auth", BacklogCleaner do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :index
+    get "/:provider/callback", AuthController, :callback
+    delete "/logout", AuthController, :delete
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", BacklogCleaner do
   #   pipe_through :api

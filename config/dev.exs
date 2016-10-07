@@ -41,3 +41,9 @@ config :backlog_cleaner, BacklogCleaner.Repo,
   database: "backlog_cleaner_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Configure Oauth for dev evironment
+config :backlog_cleaner, GitHub,
+  client_id:  System.get_env("GITHUB_CLIENT_ID"),
+client_secret:  System.get_env("GITHUB_CLIENT_SECRET"),
+redirect_uri:  System.get_env("GITHUB_REDIRECT_URI")
