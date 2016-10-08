@@ -6,6 +6,8 @@ defmodule GitHub do
   """
   use OAuth2.Strategy
 
+  @scope "user:email,repo,read:org"
+
   alias OAuth2.Strategy.AuthCode
 
   defp config do
@@ -24,6 +26,8 @@ defmodule GitHub do
   end
 
   def authorize_url!(params \\ []) do
+    params = params ++ [scope: @scope]
+
     OAuth2.Client.authorize_url!(client(), params)
   end
 

@@ -1,0 +1,4 @@
+Which repo do you want to clean? 
+
+<%= render BacklogCleaner.RepositoryListView, "index.html", conn: @conn, repos: @repos%>
+

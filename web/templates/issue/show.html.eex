@@ -1,0 +1,14 @@
+<div>
+    <%= Map.get(@issue, "title") %> 
+    <br/><br/>
+    <%= Map.get(@issue, "body") %>
+</div>
+<br/><br/>
+<br/><br/>
+<div>
+    Should this be closed?
+
+    <%= link("Yes", to: issue_path(@conn, :delete, @owner, @repo, Map.get(@issue, "number")), method: :delete)%>
+
+    No
+</div>

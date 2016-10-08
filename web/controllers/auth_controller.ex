@@ -1,4 +1,3 @@
-require IEx
 # 
 # This is based on the example found:
 # https://github.com/scrogson/oauth2_example/blob/master/web/controllers/auth_controller.ex
@@ -56,8 +55,8 @@ defmodule BacklogCleaner.AuthController do
 
   defp get_user!("github", client) do
     %{body: user} = OAuth2.Client.get!(client, "/user")
-    IEx.pry
-    IO.inspect(user)
-    %{name: user["name"], avatar: user["avatar_url"]}
+    # %{name: user["name"], avatar: user["avatar_url"]}
+
+    user
   end
 end

@@ -1,0 +1,15 @@
+<ul>
+    <%= for repo <- @repos do  %>
+        <li> <%=
+             link(
+                 Map.get(repo, "full_name"),
+                 to: issue_path(
+                     @conn,
+                     :index,
+                     Map.get(Map.get(repo,"owner"), "login"),
+                     Map.get(repo, "name")
+                 )
+             )
+             %> </li>
+    <% end %>
+</ul>

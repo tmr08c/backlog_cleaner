@@ -1,0 +1,9 @@
+<%= if Enum.count(@issues) > 0 do %>
+    You currently have <%= Enum.count(@issues) %> issues
+    <%= link("Start Cleaning!", to: issue_path(@conn, :show, @owner, @repo, Map.get(Enum.random(@issues), "number"))) %>
+<% else %>
+    Nothing to clean here
+<% end %>
+
+
+
