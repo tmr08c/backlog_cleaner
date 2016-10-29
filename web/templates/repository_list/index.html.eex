@@ -1,6 +1,7 @@
-<ul>
+<div class="repository-list">
+    <input type="'text" class="repository-search" />
     <%= for repo <- @repos do  %>
-        <li> <%=
+        <div class="repository"> <%=
              link(
                  Map.get(repo, "full_name"),
                  to: issue_path(
@@ -10,6 +11,13 @@
                      Map.get(repo, "name")
                  )
              )
-             %> </li>
+             %> </div>
     <% end %>
-</ul>
+</div>
+
+<script>
+  (function() {
+      console.log('hello');
+      require('web/static/js/repository').repositorySearch();
+  })()
+</script>
