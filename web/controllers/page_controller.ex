@@ -5,7 +5,6 @@ defmodule BacklogCleaner.PageController do
     if conn.assigns.current_user do
       conn |> redirect(to: repository_path(conn, :index))
     else
-      raise "boom"
       render conn, "index.html"
     end
   end

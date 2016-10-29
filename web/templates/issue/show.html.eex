@@ -10,5 +10,5 @@
 
     <%= link("Yes", to: issue_path(@conn, :delete, @owner, @repo, Map.get(@issue, "number")), method: :delete)%>
 
-    No
+    <%= link("No", to: issue_path(@conn, :show, @owner, @repo, "random")) %>
 </div>

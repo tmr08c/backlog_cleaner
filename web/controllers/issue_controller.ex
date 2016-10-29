@@ -20,6 +20,20 @@ defmodule BacklogCleaner.IssueController do
     |> render("index.html")
   end
 
+
+  def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
+    access_token = conn |> get_session(:access_token)
+
+    client = Tentacat.Client.new(%{access_token: access_token})
+    issue = Tentacat.Issues.list(owner, repo, client) |> Enum.random
+
+    conn
+    |> assign(:owner, owner)
+    |> assign(:repo, repo)
+    |> assign(:issue, issue)
+    |> render("show.html")
+  end
+
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
     access_token = conn |> get_session(:access_token)
 
