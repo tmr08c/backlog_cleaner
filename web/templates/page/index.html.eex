@@ -1,7 +1,5 @@
-<%= if @access_token do %>
+<%= if @current_user do %>
     Which repo would you like to clean?
-
-
 <% else %>
     <a class="btn btn-primary btn-lg" href="<%= auth_path @conn, :index, "github" %>">
         <i class="fa fa-github"></i>

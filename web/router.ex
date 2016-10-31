@@ -7,7 +7,7 @@ defmodule BacklogCleaner.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :assign_current_user
+    plug BacklogCleaner.Plugs.FetchCurrentUser
   end
 
   pipeline :api do
@@ -17,9 +17,15 @@ defmodule BacklogCleaner.Router do
   end
 
   scope "/", BacklogCleaner do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
-    get "/", PageController, :index
+    resources "/session", SessionController, only: [:new, :delete], singleton: true
+  end
+
+  scope "/", BacklogCleaner do
+    pipe_through [:browser, BacklogCleaner.Plugs.Auth] # Use the default browser stack
+
+    get "/", RepositoryController, :index
     get "/repositories", RepositoryController, :index
     get "/repository/:owner/:repo/issues", IssueController, :index
     get "/repository/:owner/:repo/issue/:number", IssueController, :show
@@ -38,8 +44,4 @@ defmodule BacklogCleaner.Router do
   # scope "/api", BacklogCleaner do
   #   pipe_through :api
   # end
-
-  defp assign_current_user(conn, _) do
-    assign(conn, :current_user, get_session(conn, :current_user))
-  end
 end

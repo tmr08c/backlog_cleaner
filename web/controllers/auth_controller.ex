@@ -5,6 +5,7 @@
 
 defmodule BacklogCleaner.AuthController do
   use BacklogCleaner.Web, :controller
+  alias BacklogCleaner.User
 
   @doc """
   This action is reached via `/auth/:provider` and redirects to the OAuth2 provider
@@ -41,10 +42,13 @@ defmodule BacklogCleaner.AuthController do
     #
     # If you need to make additional resource requests, you may want to store
     # the access token as well.
-    conn
-    |> put_session(:current_user, user)
-    |> put_session(:access_token, client.token.access_token)
-    |> redirect(to: "/")
+    if user do
+      conn |> BacklogCleaner.Plugs.Auth.login(user, client.token.access_token)
+    else
+      conn
+      |> put_flash(:error, "Error signing in")
+      |> redirect(to: "/session/new")
+    end
   end
 
   defp authorize_url!("github"),   do: GitHub.authorize_url!
@@ -55,8 +59,32 @@ defmodule BacklogCleaner.AuthController do
 
   defp get_user!("github", client) do
     %{body: user} = OAuth2.Client.get!(client, "/user")
-    # %{name: user["name"], avatar: user["avatar_url"]}
 
-    user
+    find_or_insert_user(
+      user["email"],
+      user["login"],
+      user["name"],
+      user["avatar_url"]
+    )
+  end
+
+  defp find_or_insert_user(email, login, name, avatar_url) do
+    Repo.one(User.with_email(email)) ||
+    insert_new_user(email, login, name, avatar_url)
+  end
+
+  defp insert_new_user(email, login, name, avatar_url) do
+    changeset =
+      User.changeset(
+       %User{},
+        %{email: email, username: login, name: name, avatar_url: avatar_url}
+      )
+
+    case Repo.insert(changeset) do
+      {:ok, user} ->
+        user
+      {:error, _changeset} ->
+        nil
+    end
   end
 end

@@ -8,8 +8,7 @@ defmodule BacklogCleaner.IssueController do
   # probably via a webhook
 
   def index(conn, %{ "owner" => owner, "repo" => repo } = params) do
-    access_token = conn |> get_session(:access_token)
-
+    access_token = conn.assigns.access_token
     client = Tentacat.Client.new(%{access_token: access_token})
     issues = Tentacat.Issues.list(owner, repo, client)
 
@@ -22,8 +21,7 @@ defmodule BacklogCleaner.IssueController do
 
 
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
-    access_token = conn |> get_session(:access_token)
-
+    access_token = conn.assigns.access_token
     client = Tentacat.Client.new(%{access_token: access_token})
     issue = Tentacat.Issues.list(owner, repo, client) |> Enum.random
 
@@ -35,8 +33,7 @@ defmodule BacklogCleaner.IssueController do
   end
 
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
-    access_token = conn |> get_session(:access_token)
-
+    access_token = conn.assigns.access_token
     client = Tentacat.Client.new(%{access_token: access_token})
     issue = Tentacat.Issues.find(owner, repo, number, client)
 
@@ -48,8 +45,8 @@ defmodule BacklogCleaner.IssueController do
   end
 
   def delete(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
-    access_token = conn |> get_session(:access_token)
 
+    access_token = conn.assigns.access_token
     client = Tentacat.Client.new(%{access_token: access_token})
 
     Tentacat.Issues.Comments.create(
