@@ -1,9 +1,13 @@
+const escapeStringRegexp = require('escape-string-regexp');
+const SEARCH_FIELD_CLASS = ".repository-search";
+const REPO_FIELD_CLASS = ".repository"
+
 export function repositorySearch() {
-    $(".repository-search").on("keyup", function(element) {
+    $(SEARCH_FIELD_CLASS).on("keyup", function(element) {
         var searchValue = element.target.value;
 
         if(searchValue.length == 0){
-            $(".repository").show()
+            $(REPO_FIELD_CLASS).show()
         }
         else{
             filterRepositories(searchValue)
@@ -13,11 +17,13 @@ export function repositorySearch() {
 
 
 function filterRepositories(searchValue) {
-    $.each($(".repository"), function(_i, repo) {
+    $.each($(REPO_FIELD_CLASS), function(_i, repo) {
         var $repo = $(repo);
         var repoName = $repo.find("a").text();
+        searchValue = escapeStringRegexp(searchValue);
+        var searchRegExp = new RegExp(searchValue.split("").join(".*") + ".*", "i")
 
-        if(repoName.match(searchValue)){
+        if(repoName.match(searchRegExp)){
             $repo.show();
         }
         else{
