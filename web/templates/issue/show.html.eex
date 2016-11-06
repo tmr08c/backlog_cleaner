@@ -1,3 +1,9 @@
+<%= if @audit do %>
+    <div>
+        <%= @audit.user.username %> decided to <%= @audit.action %> this issue <%= Timex.from_now(@audit.inserted_at) %>
+    </div>
+<% end %>
+
 <div>
     <%= Map.get(@issue, "title") %> 
     <br/><br/>
@@ -10,5 +16,5 @@
 
     <%= link("Yes", to: issue_path(@conn, :delete, @owner, @repo, Map.get(@issue, "number")), method: :delete)%>
 
-    <%= link("No", to: issue_path(@conn, :show, @owner, @repo, "random")) %>
+    <%= link("No", to: issue_path(@conn, :keep, @owner, @repo, Map.get(@issue, "number"))) %>
 </div>

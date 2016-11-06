@@ -1,6 +1,8 @@
 defmodule BacklogCleaner.IssueController do
   use BacklogCleaner.Web, :controller
 
+  alias BacklogCleaner.Audit
+
   # Long term we may want to store issues in an ETS table
   # as a form of local caching.
   #
@@ -19,17 +21,14 @@ defmodule BacklogCleaner.IssueController do
     |> render("index.html")
   end
 
-
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
-    access_token = conn.assigns.access_token
-    client = Tentacat.Client.new(%{access_token: access_token})
-    issue = Tentacat.Issues.list(owner, repo, client) |> Enum.random
+    issue =
+      conn
+      |> tentacat_client
+      |> BacklogCleaner.IssueFinder.random_issue_number_for(owner, repo) 
 
     conn
-    |> assign(:owner, owner)
-    |> assign(:repo, repo)
-    |> assign(:issue, issue)
-    |> render("show.html")
+    |> redirect(to: issue_path(conn, :show, owner, repo, issue))
   end
 
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
@@ -37,10 +36,21 @@ defmodule BacklogCleaner.IssueController do
     client = Tentacat.Client.new(%{access_token: access_token})
     issue = Tentacat.Issues.find(owner, repo, number, client)
 
+    # check for audit for this isse
+    audit = Audit
+    |> Audit.for_repo(owner, repo)
+    |> Audit.for_issue(number)
+    |> Audit.with_user
+    |> Audit.sorted
+    |> Repo.one
+
+    IO.inspect(audit)
+
     conn
     |> assign(:owner, owner)
     |> assign(:repo, repo)
     |> assign(:issue, issue)
+    |> assign(:audit, audit)
     |> render("show.html")
   end
 
@@ -48,6 +58,27 @@ defmodule BacklogCleaner.IssueController do
 
     access_token = conn.assigns.access_token
     client = Tentacat.Client.new(%{access_token: access_token})
+
+    changeset = Audit.changeset(
+      %Audit{},
+      %{
+        user_id: conn.assigns.current_user.id,
+        repo_owner: owner,
+        repo_name: repo,
+        issue_number: number,
+        action: "close"
+      }
+    )
+    case Repo.insert(changeset) do
+      {:ok, audit} ->
+        conn
+        |> put_flash(:info, "Closing issue")
+        |> redirect(to: issue_path(conn, :show, owner, repo, "random"))
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Error closing issue. Please try again.")
+        |> redirect(to: issue_path(conn, :show, owner, repo, number))
+    end
 
     Tentacat.Issues.Comments.create(
       owner,
@@ -67,4 +98,32 @@ defmodule BacklogCleaner.IssueController do
     conn
     |> redirect(to: issue_path(conn, :index, owner, repo))
   end
+
+  def keep(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
+    changeset = Audit.changeset(
+      %Audit{},
+      %{
+        user_id: conn.assigns.current_user.id,
+        repo_owner: owner,
+        repo_name: repo,
+        issue_number: number,
+        action: "keep"
+      }
+    )
+    case Repo.insert(changeset) do
+      {:ok, audit} ->
+        conn
+        |> put_flash(:info, "Flagged issue as keep")
+        |> redirect(to: issue_path(conn, :show, owner, repo, "random"))
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Error marking issue as to keep")
+        |> redirect(to: issue_path(conn, :show, owner, repo, number))
+    end
+  end
+
+  defp tentacat_client(conn) do
+    Tentacat.Client.new(%{access_token: conn.assigns.access_token})
+  end
 end
+

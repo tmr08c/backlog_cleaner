@@ -19,7 +19,7 @@ defmodule BacklogCleaner.Mixfile do
   def application do
     [mod: {BacklogCleaner, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :tentacat, :httpoison, :oauth2]]
+                    :phoenix_ecto, :postgrex, :tentacat, :httpoison, :oauth2, :timex_ecto]]
   end
 
   # Specifies which paths to compile per environment.
@@ -41,7 +41,9 @@ defmodule BacklogCleaner.Mixfile do
      {:tentacat, "~> 0.5"},
      {:json, "~> 0.3.0"},
      {:httpoison, "~> 0.9.0"},
-     {:oauth2, "~> 0.7"}
+     {:oauth2, "~> 0.7"},
+     {:timex, "~> 3.0"},
+     {:timex_ecto, "~> 3.0"}
    ]
   end
 
