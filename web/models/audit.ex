@@ -2,6 +2,7 @@ defmodule BacklogCleaner.Audit do
   use BacklogCleaner.Web, :model
 
   @keep_open_action "keep"
+  @close_action "close"
 
   schema "audits" do
     field :repo_owner, :string
@@ -54,5 +55,26 @@ defmodule BacklogCleaner.Audit do
   def issues_to_keep(query) do
     from audit in query,
     where: audit.action == @keep_open_action
+  end
+
+  def keep_changeset(user, repo_owner, repo_name, issue_number) do
+    base_changeset(user, repo_owner, repo_name, issue_number, @keep_open_action)
+  end
+
+  def close_changeset(user, repo_owner, repo_name, issue_number) do
+    base_changeset(user, repo_owner, repo_name, issue_number, @close_action)
+  end
+
+  defp base_changeset(user, repo_owner, repo_name, issue_number, action, model \\ %BacklogCleaner.Audit{}) do
+    changeset(
+      model,
+      %{
+        user_id: user.id,
+        repo_owner: repo_owner,
+        repo_name: repo_name,
+        issue_number: issue_number,
+        action: action
+      }
+    )
   end
 end
