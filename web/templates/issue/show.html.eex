@@ -7,7 +7,7 @@
 <div>
     <%= Map.get(@issue, "title") %> 
     <br/><br/>
-    <%= Map.get(@issue, "body") %>
+    <%= raw issue_body(@issue) %>
 </div>
 <br/><br/>
 <br/><br/>

@@ -43,7 +43,9 @@ defmodule BacklogCleaner.Mixfile do
      {:httpoison, "~> 0.9.0"},
      {:oauth2, "~> 0.7"},
      {:timex, "~> 3.0"},
-     {:timex_ecto, "~> 3.0"}
+     {:timex_ecto, "~> 3.0"},
+     { :earmark, "~> 1.0.3" },
+     {:html_sanitize_ex, "~> 1.0.0"},
    ]
   end
 
