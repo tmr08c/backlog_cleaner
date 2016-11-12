@@ -1,8 +1,17 @@
 <%= if Enum.count(@issues) > 0 do %>
     You currently have <%= Enum.count(@issues) %> issues
-    <%= link("Start Cleaning!", to: issue_path(@conn, :show, @owner, @repo, "random")) %>
+    <%= link("Start Cleaning!", to: issue_path(@conn, :show, @owner, @repo, "random", all: @all)) %>
+
+    <%= if @all do %>
+        <%= link("Filter audited issues", to: issue_path(@conn, :index, @owner, @repo, all: false)) %>
+    <% end %>
 <% else %>
     Nothing to clean here
+
+    <%= if !@all do %>
+        <%= link("Show me all", to: issue_path(@conn, :index, @owner, @repo, all: true)) %>
+    <% end %>
+
 <% end %>
 
 

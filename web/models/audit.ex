@@ -41,9 +41,9 @@ defmodule BacklogCleaner.Audit do
     from audit in query, preload: [:user]
   end
 
-  def sorted(query) do
-    from a in query,
-    order_by: [asc: a.inserted_at]
+  def most_recent(query) do
+    (from a in query, order_by: [desc: a.inserted_at])
+    |> first
   end
 
   def audited_issues(query) do

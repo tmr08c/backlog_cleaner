@@ -5,6 +5,8 @@ defmodule BacklogCleaner.IssueController do
   alias BacklogCleaner.IssueManager
   alias BacklogCleaner.IssueFinder
 
+  plug :check_all
+
   # Long term we may want to store issues in an ETS table
   # as a form of local caching.
   #
@@ -12,9 +14,10 @@ defmodule BacklogCleaner.IssueController do
   # probably via a webhook
 
   def index(conn, %{ "owner" => owner, "repo" => repo } = params) do
-    access_token = conn.assigns.access_token
-    client = Tentacat.Client.new(%{access_token: access_token})
-    issues = Tentacat.Issues.list(owner, repo, client)
+    issues =
+      conn
+      |> tentacat_client
+      |> IssueFinder.issues_for(owner, repo, conn.assigns.all)
 
     conn
     |> assign(:owner, owner)
@@ -26,7 +29,7 @@ defmodule BacklogCleaner.IssueController do
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
     case conn
     |> tentacat_client
-    |> IssueFinder.random_issue_number_for(owner, repo) do
+    |> IssueFinder.random_issue_number_for(owner, repo, conn.assigns.all) do
       {:error, _} -> conn |> redirect(to: issue_path(conn, :index, owner, repo))
       {:ok, issue} -> conn |> redirect(to: issue_path(conn, :show, owner, repo, issue))
     end
@@ -40,7 +43,7 @@ defmodule BacklogCleaner.IssueController do
     |> Audit.for_repo(owner, repo)
     |> Audit.for_issue(number)
     |> Audit.with_user
-    |> Audit.sorted
+    |> Audit.most_recent
     |> Repo.one
 
     conn
@@ -85,6 +88,27 @@ defmodule BacklogCleaner.IssueController do
         conn
         |> put_flash(:error, "Error marking issue as to keep")
         |> redirect(to: issue_path(conn, :show, owner, repo, number))
+    end
+  end
+
+  @doc """
+  Plug used to track whether or not to include issues that have
+  already been audited/flagged to keep open.
+  """
+  defp check_all(conn, _opts) do
+    case conn.query_params["all"] do
+      "true" ->
+        conn
+        |> put_session(:all, true)
+        |> assign(:all, true)
+      "false" ->
+        conn
+        |> put_session(:all, false)
+        |> assign(:all, false)
+      _ ->
+        check_all = get_session(conn, :all)
+        conn
+        |> assign(:all, check_all)
     end
   end
 

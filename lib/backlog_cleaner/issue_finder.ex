@@ -3,13 +3,23 @@ defmodule BacklogCleaner.IssueFinder do
   alias BacklogCleaner.Audit
   alias BacklogCleaner.Repo
 
+  def issues_for(tentacat_client, owner, repo, include_audited) do
+    if include_audited do
+      open_issues_for(owner, repo, tentacat_client)
+    else
+      Enum.reject open_issues_for(owner, repo, tentacat_client), fn (issue) ->
+        Enum.member?(managed_issue_numbers_for(owner, repo), Map.get(issue, "number"))
+      end
+    end
+  end
+
   @doc """
   Given a repository owner and name returns a random open issue number.
 
   If `include_audited` is `true` it will look at all open issues in the repo.
   If `include_audited` is `false` it will ignore issues that have we have `Audit` records stored for. 
   """
-  def random_issue_number_for(tentacat_client, owner, repo, include_audited \\ false) do
+  def random_issue_number_for(tentacat_client, owner, repo, include_audited) do
     open_issue_numbers =
       open_issues_for(owner, repo, tentacat_client)
       |> Enum.map(fn (issue) -> Map.get(issue, "number") end)
