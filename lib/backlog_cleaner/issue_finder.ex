@@ -13,6 +13,10 @@ defmodule BacklogCleaner.IssueFinder do
     end
   end
 
+  def issue_for(tentacat_client, owner, repo, issue_number) do
+    Issues.find(owner, repo, issue_number, tentacat_client)
+  end
+
   @doc """
   Given a repository owner and name returns a random open issue number.
 

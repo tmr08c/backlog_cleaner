@@ -23,7 +23,7 @@ defmodule BacklogCleaner.Audit do
     |> cast(params, [:user_id, :repo_name, :repo_owner, :issue_number, :action])
     |> validate_required([:user_id, :repo_name, :repo_owner, :issue_number, :action])
     |> update_change(:action, &String.downcase/1)
-    |> validate_format(:action, ~r/close|keep/)
+    |> validate_format(:action, ~r/#{@keep_open_action}|#{@close_action}/)
   end
 
   def for_repo(query, repo_owner, repo_name) do
@@ -57,24 +57,6 @@ defmodule BacklogCleaner.Audit do
     where: audit.action == @keep_open_action
   end
 
-  def keep_changeset(user, repo_owner, repo_name, issue_number) do
-    base_changeset(user, repo_owner, repo_name, issue_number, @keep_open_action)
-  end
-
-  def close_changeset(user, repo_owner, repo_name, issue_number) do
-    base_changeset(user, repo_owner, repo_name, issue_number, @close_action)
-  end
-
-  defp base_changeset(user, repo_owner, repo_name, issue_number, action, model \\ %BacklogCleaner.Audit{}) do
-    changeset(
-      model,
-      %{
-        user_id: user.id,
-        repo_owner: repo_owner,
-        repo_name: repo_name,
-        issue_number: issue_number,
-        action: action
-      }
-    )
-  end
+  def keep_action, do: @keep_open_action
+  def close_action, do: @close_action
 end

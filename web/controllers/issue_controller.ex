@@ -1,9 +1,9 @@
 defmodule BacklogCleaner.IssueController do
   use BacklogCleaner.Web, :controller
 
-  alias BacklogCleaner.Audit
-  alias BacklogCleaner.IssueManager
+  alias BacklogCleaner.AuditFinder
   alias BacklogCleaner.IssueFinder
+  alias BacklogCleaner.IssueManager
 
   plug :check_all
 
@@ -36,15 +36,13 @@ defmodule BacklogCleaner.IssueController do
   end
 
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
-    issue = Tentacat.Issues.find(owner, repo, number, tentacat_client(conn))
+    issue = 
+      conn
+      |> tentacat_client
+      |> IssueFinder.issue_for(owner, repo, number)
 
     # check for audit for this isse
-    audit = Audit
-    |> Audit.for_repo(owner, repo)
-    |> Audit.for_issue(number)
-    |> Audit.with_user
-    |> Audit.most_recent
-    |> Repo.one
+    audit = AuditFinder.most_recent_for(owner, repo, number)
 
     conn
     |> assign(:owner, owner)
@@ -57,34 +55,27 @@ defmodule BacklogCleaner.IssueController do
   def delete(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
     client = conn |> tentacat_client
 
-    if IssueManager.close(client, conn.assigns.current_user, owner, repo, number) do
-      conn
-      |> put_flash(:info, "Closing issue")
-      |> redirect(to: issue_path(conn, :show, owner, repo, "random"))
-    else
-      conn
-      |> put_flash(:error, "Error closing issue. Please try again.")
-      |> redirect(to: issue_path(conn, :show, owner, repo, number))
+    case IssueManager.close(client, conn.assigns.current_user, owner, repo, number) do
+      {:ok} ->
+        conn
+        |> put_flash(:info, "Closing issue")
+        |> redirect(to: issue_path(conn, :show, owner, repo, "random"))
+      _error ->
+        conn
+        |> put_flash(:error, "Error closing issue. Please try again.")
+        |> redirect(to: issue_path(conn, :show, owner, repo, number))
     end
   end
 
   def keep(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
-    changeset = Audit.changeset(
-      %Audit{},
-      %{
-        user_id: conn.assigns.current_user.id,
-        repo_owner: owner,
-        repo_name: repo,
-        issue_number: number,
-        action: "keep"
-      }
-    )
-    case Repo.insert(changeset) do
-      {:ok, audit} ->
+    client = conn |> tentacat_client
+
+    case IssueManager.keep(client, conn.assigns.current_user, owner, repo, number) do
+      {:ok} ->
         conn
         |> put_flash(:info, "Flagged issue as keep")
         |> redirect(to: issue_path(conn, :show, owner, repo, "random"))
-      {:error, _changeset} ->
+      _error ->
         conn
         |> put_flash(:error, "Error marking issue as to keep")
         |> redirect(to: issue_path(conn, :show, owner, repo, number))

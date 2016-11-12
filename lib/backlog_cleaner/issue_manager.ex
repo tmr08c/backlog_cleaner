@@ -1,43 +1,52 @@
 defmodule BacklogCleaner.IssueManager do
-  alias BacklogCleaner.Audit
-  alias BacklogCleaner.Repo
+  alias BacklogCleaner.AuditManager
   alias Tentacat.Issues
 
+  @closed_state "closed"
+
   def close(tentacat_client, user, repo_owner, repo_name, issue_number) do
-    create_close_audit(user, repo_owner, repo_name, issue_number) &&
-    close_issue(tentacat_client, repo_owner, repo_name, issue_number) &&
-    create_close_comment(tentacat_client, repo_owner, repo_name, issue_number)
+    with {:ok, _audit} <- AuditManager.create_close(user, repo_owner, repo_name, issue_number),
+         {:ok, _issue} <- close_issue(tentacat_client, repo_owner, repo_name, issue_number),
+         {201, _comment} <- create_comment(tentacat_client, repo_owner, repo_name, issue_number, close_comment_body(user)),
+      do: {:ok}
   end
 
-  def keep do
-  end
-
-  defp create_close_audit(user, repo_owner, repo_name, issue_number) do
-    changeset = Audit.close_changeset(user, repo_owner, repo_name, issue_number)
-
-    case Repo.insert(changeset) do
-      {:ok, _audit} ->
-        true
-      {:error, _changeset} ->
-        false
-    end
+  def keep(tentacat_client, user, repo_owner, repo_name, issue_number) do
+    with {:ok, _audit} <- AuditManager.create_keep(user, repo_owner, repo_name, issue_number),
+         {201, _comment} <- create_comment(tentacat_client, repo_owner, repo_name, issue_number, keep_comment_body(user)),
+    do: {:ok}
   end
 
   defp close_issue(tentacat_client, repo_owner, repo_name, issue_number) do
-    Issues.update(repo_owner, repo_name, issue_number, [state: "closed"], tentacat_client)
+    issue = Issues.update(
+      repo_owner,
+      repo_name,
+      issue_number,
+      [state: @closed_state],
+      tentacat_client
+    )
 
-    true
+    case issue do
+      %{"state" => @closed_state} -> {:ok, issue}
+      _ -> {:error, "Failed to close issue"}
+    end
   end
 
-  defp create_close_comment(tentacat_client, repo_owner, repo_name, issue_number) do
+  defp create_comment(tentacat_client, repo_owner, repo_name, issue_number, comment_body) do
     Issues.Comments.create(
       repo_owner,
       repo_name,
       issue_number,
-      %{ "body" => "It was determined that this issue was stale and has been closed via Backlog Cleaner"},
+      %{ "body" => comment_body },
       tentacat_client
     )
+  end
 
-    true
+  defp close_comment_body(user) do
+       "@#{user.username} detemined this issue was stale and closed it using Backlog Cleaner" 
+  end
+
+  defp keep_comment_body(user) do
+    "@#{user.username} detemined this issue is still valid using Backlog Cleaner" 
   end
 end
