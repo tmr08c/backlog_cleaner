@@ -28,9 +28,9 @@ defmodule BacklogCleaner.Router do
     get "/", RepositoryController, :index
     get "/repositories", RepositoryController, :index
     get "/repository/:owner/:repo/issues", IssueController, :index
-    get "/repository/:owner/:repo/issue/:number", IssueController, :show
-    get "/repository/:owner/:repo/issue/:number/keep", IssueController, :keep
-    delete "/repository/:owner/:repo/issue/:number", IssueController, :delete
+    get "/repository/:owner/:repo/issues/:number", IssueController, :show
+    get "/repository/:owner/:repo/issues/:number/keep", IssueController, :keep
+    delete "/repository/:owner/:repo/issues/:number", IssueController, :delete
   end
 
   scope "/auth", BacklogCleaner do
