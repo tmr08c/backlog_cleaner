@@ -3,6 +3,7 @@ defmodule BacklogCleaner.IssueController do
 
   alias BacklogCleaner.Audit
   alias BacklogCleaner.IssueManager
+  alias BacklogCleaner.IssueFinder
 
   # Long term we may want to store issues in an ETS table
   # as a form of local caching.
@@ -22,15 +23,13 @@ defmodule BacklogCleaner.IssueController do
     |> render("index.html")
   end
 
-  # Need to add handling for no issues
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
-    issue =
-      conn
-      |> tentacat_client
-      |> BacklogCleaner.IssueFinder.random_issue_number_for(owner, repo) 
-
-    conn
-    |> redirect(to: issue_path(conn, :show, owner, repo, issue))
+    case conn
+    |> tentacat_client
+    |> IssueFinder.random_issue_number_for(owner, repo) do
+      {:error, _} -> conn |> redirect(to: issue_path(conn, :index, owner, repo))
+      {:ok, issue} -> conn |> redirect(to: issue_path(conn, :show, owner, repo, issue))
+    end
   end
 
   def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do

@@ -19,15 +19,18 @@ defmodule BacklogCleaner.IssueFinder do
     else
       open_issue_numbers -- managed_issue_numbers_for(owner, repo)
     end
-    |> Enum.random
+    |> random_issue
   end
+
+  defp random_issue([]), do: {:error, :no_issues}
+  defp random_issue(issues), do: {:ok, Enum.random(issues)}
 
   defp open_issues_for(owner, repo, tentacat_client) do
     Issues.list(owner, repo, tentacat_client)
   end
 
   defp managed_issue_numbers_for(owner, repo) do
-     Audit
+    Audit
     |> Audit.for_repo(owner, repo)
     |> Audit.audited_issues
     |> Audit.issues_to_keep
