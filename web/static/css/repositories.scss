@@ -1,0 +1,24 @@
+@import "bootstrap";
+
+.repository-search{
+    margin: 20px auto;
+}
+
+.repository-list{
+    height: 55vh;
+    overflow-y: scroll;
+}
+
+.repository{
+    padding: 0;
+    a{
+        padding: 10px 15px;
+        display: block;
+        height: 100%;
+        text-decoration: none;
+
+        &:hover{
+            background-color: $gray-lighter;
+        }
+    }
+}

@@ -1,4 +1,33 @@
-Which repo do you want to clean? 
+<p>
+    Search for a repository to start clearing out
+</p>
 
-<%= render BacklogCleaner.RepositoryListView, "index.html", conn: @conn, repos: @repos%>
 
+<input type="'text" class="repository-search form-control" placeholder="Repository Name" />
+
+<div class="panel panel-default repository-list">
+    <!-- List group -->
+    <ul class="list-group">
+        <%= for repo <- @repos do  %>
+            <li class="repository list-group-item">
+                <%=
+                link(
+                    Map.get(repo, "full_name"),
+                    to: issue_path(
+                        @conn,
+                        :index,
+                        Map.get(Map.get(repo,"owner"), "login"),
+                        Map.get(repo, "name")
+                    )
+                )
+                %>
+            </li>
+        <% end %>
+    </ul>
+</div>
+
+<script>
+ (function() {
+     require('web/static/js/repository').repositorySearch();
+ })()
+</script>
