@@ -17,9 +17,7 @@ defmodule BacklogCleaner.AuthController do
 
   def delete(conn, _params) do
     conn
-    |> put_flash(:info, "You have been logged out!")
-    |> configure_session(drop: true)
-    |> redirect(to: "/")
+    |> BacklogCleaner.Plugs.Auth.logout
   end
 
   @doc """
@@ -47,11 +45,11 @@ defmodule BacklogCleaner.AuthController do
     else
       conn
       |> put_flash(:error, "Error signing in")
-      |> redirect(to: "/session/new")
+      |> redirect(to: "/")
     end
   end
 
-  defp authorize_url!("github"),   do: GitHub.authorize_url!
+  defp authorize_url!("github"), do: GitHub.authorize_url!
   defp authorize_url!(_), do: raise "No matching provider available"
 
   defp get_token!("github", code),   do: GitHub.get_token!(code: code)

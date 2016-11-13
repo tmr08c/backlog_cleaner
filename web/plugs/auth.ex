@@ -39,7 +39,8 @@ defmodule BacklogCleaner.Plugs.Auth do
   """
   def login(conn, user, access_token) do
     conn
-    |> put_session(:user_id, user.id)
+  
+  |> put_session(:user_id, user.id)
     |> put_session(:access_token, access_token)
     |> configure_session(renew: true)
     |> Phoenix.Controller.redirect(to: "/")
@@ -54,6 +55,7 @@ defmodule BacklogCleaner.Plugs.Auth do
   def logout(conn) do
     conn
     |> configure_session(drop: true)
-    |> Phoenix.Controller.redirect(to: "/session/new")
+    |> Phoenix.Controller.put_flash(:info, "You have been logged out!")
+    |> Phoenix.Controller.redirect(to: "/")
   end
 end

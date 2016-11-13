@@ -4,17 +4,31 @@
     </div>
 <% end %>
 
-<div>
-    <%= Map.get(@issue, "title") %> 
-    <br/><br/>
-    <%= raw issue_body(@issue) %>
-</div>
-<br/><br/>
-<br/><br/>
-<div>
-    Should this be closed?
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="pangel-title">
+                    <%= Map.get(@issue, "title") %> 
+                </h3>
+                <span class="last-update-wrapper">
+                    Last updated <%= last_updated(@issue) %>
+                </span>
+            </div>
+            <div class="panel-body issue-body">
+                <br/><br/>
+                <%= raw issue_body(@issue) %>
 
-    <%= link("Yes", to: issue_path(@conn, :delete, @owner, @repo, Map.get(@issue, "number")), method: :delete)%>
+            </div>
+            <div class="issue-actions-wrapper row">
+                <div class="col-md-6 text-right">
+                    <%= render "_close_button.html", conn: @conn, owner: @owner, repo: @repo, number: Map.get(@issue, "number") %>
+                </div>
 
-    <%= link("No", to: issue_path(@conn, :keep, @owner, @repo, Map.get(@issue, "number"))) %>
+                <div class="col-md-6 text-left">
+                    <%= render "_keep_issue_button.html",  conn: @conn, owner: @owner, repo: @repo, number: Map.get(@issue, "number") %>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

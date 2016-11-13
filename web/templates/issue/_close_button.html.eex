@@ -1,0 +1,17 @@
+<%= link(
+    content_tag(
+        :i,
+        "",
+        [
+            {:aria, [hidden: "true"]},
+            {:class,  "fa fa-times-circle-o close-issue-icon"},
+            {:title, "Close Issue"}
+        ]
+    ),
+    [
+
+        {:to, issue_path(@conn, :delete, @owner, @repo, @number)},
+        {:method, :delete},
+        {:aria, [label: "Keep Issue Open"]}
+    ]
+) %>

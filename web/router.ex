@@ -19,13 +19,13 @@ defmodule BacklogCleaner.Router do
   scope "/", BacklogCleaner do
     pipe_through :browser
 
+    get "/", PageController, :index
     resources "/session", SessionController, only: [:new, :delete], singleton: true
   end
 
   scope "/", BacklogCleaner do
     pipe_through [:browser, BacklogCleaner.Plugs.Auth] # Use the default browser stack
 
-    get "/", RepositoryController, :index
     get "/repositories", RepositoryController, :index
     get "/repository/:owner/:repo/issues", IssueController, :index
     get "/repository/:owner/:repo/issues/:number", IssueController, :show

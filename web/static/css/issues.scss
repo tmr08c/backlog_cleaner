@@ -1,0 +1,26 @@
+@import "bootstrap";
+
+.issue-body{
+    overflow-x: scroll;
+}
+
+.issue-actions-wrapper{
+    margin-top: 75px;
+    margin-bottom: 25px;
+
+    .fa{
+        font-size: 100px;
+    }
+
+    .keep-issue-icon{
+        color: $brand-success;
+    }
+
+    .close-issue-icon{
+        color: $brand-danger;
+    }
+}
+
+.last-update-wrapper{
+    font-style: italic;
+}
