@@ -2,28 +2,17 @@
     Search for a repository to start clearing out
 </p>
 
-
 <input type="'text" class="repository-search form-control" placeholder="Repository Name" />
 
 <div class="panel panel-default repository-list">
-    <!-- List group -->
-    <ul class="list-group">
+    <div class="list-group">
         <%= for repo <- @repos do  %>
-            <li class="repository list-group-item">
-                <%=
-                link(
-                    Map.get(repo, "full_name"),
-                    to: issue_path(
-                        @conn,
-                        :index,
-                        Map.get(Map.get(repo,"owner"), "login"),
-                        Map.get(repo, "name")
-                    )
-                )
-                %>
-            </li>
+            <%= link(to: issue_path(@conn, :index, owner(repo), name(repo)), class: "repository list-group-item") do %>
+                <span class="badge"><%= issue_count(repo) %></span>
+                <%= full_name(repo) %>
+            <% end %>
         <% end %>
-    </ul>
+    </div>
 </div>
 
 <script>
@@ -31,3 +20,5 @@
      require('web/static/js/repository').repositorySearch();
  })()
 </script>
+
+

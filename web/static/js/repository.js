@@ -10,18 +10,23 @@ export function repositorySearch() {
             $(REPO_FIELD_CLASS).show()
         }
         else{
-            filterRepositories(searchValue)
+            filterRepositories(searchRegExp(searchValue))
         }
     });
 }
 
+function searchRegExp(searchValue) {
+    var regExpString = searchValue.split("").map(function(searchChar) {
+        return escapeStringRegexp(searchChar)
+    }).join(".*") + ".*";
 
-function filterRepositories(searchValue) {
+    return new RegExp(regExpString, "i");
+}
+
+function filterRepositories(searchRegExp) {
     $.each($(REPO_FIELD_CLASS), function(_i, repo) {
         var $repo = $(repo);
-        var repoName = $repo.find("a").text();
-        searchValue = escapeStringRegexp(searchValue);
-        var searchRegExp = new RegExp(searchValue.split("").join(".*") + ".*", "i")
+        var repoName = $repo.text();
 
         if(repoName.match(searchRegExp)){
             $repo.show();
