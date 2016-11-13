@@ -13,8 +13,10 @@ use Mix.Config
 # which you typically run after static files are built.
 config :backlog_cleaner, BacklogCleaner.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/manifest.json"
+  url: [scheme: "https", host: "afternoon-bastion-16349.herokuapp.com", port: 443],
+  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  cache_static_manifest: "priv/static/manifest.json",
+  secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -60,6 +62,23 @@ config :logger, level: :info
 #
 #     config :backlog_cleaner, BacklogCleaner.Endpoint, root: "."
 
+# Heroku Database things
+config :backlog_cleaner, BacklogCleaner.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+  ssl: true
+
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
-import_config "prod.secret.exs"
+# 
+# Since we are using Heroku we use ENV variables
+# and do not need this
+
+# import_config "prod.secret.exs"
+
+# Configure Oauth for dev evironment
+config :backlog_cleaner, GitHub,
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET"),
+  redirect_uri:  System.get_env("GITHUB_REDIRECT_URI")
