@@ -7,7 +7,7 @@
 <div class="panel panel-default repository-list">
     <div class="list-group">
         <%= for repo <- @repos do  %>
-            <%= link(to: issue_path(@conn, :index, owner(repo), name(repo)), class: "repository list-group-item") do %>
+            <%= link(to: issue_path(@conn, :show, owner(repo), name(repo), "random"), class: "repository list-group-item") do %>
                 <span class="badge"><%= issue_count(repo) %></span>
                 <%= full_name(repo) %>
             <% end %>
