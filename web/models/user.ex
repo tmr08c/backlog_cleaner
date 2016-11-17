@@ -16,7 +16,7 @@ defmodule BacklogCleaner.User do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:email, :username, :name, :avatar_url])
-    |> validate_required([:email, :username, :name])
+    |> validate_required([:username])
   end
 
   def with_email(email) do
