@@ -1,0 +1,24 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="pangel-title">
+            <%= Map.get(@issue, "title") %> 
+        </h3>
+        <span class="last-update-wrapper">
+            Last updated <%= last_updated(@issue) %>
+        </span>
+    </div>
+    <div class="panel-body issue-body">
+        <%= raw issue_body(@issue) %>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <div class="col-md-6 col-xs-6 text-right">
+                <i class="fa fa-5x fa-times-circle-o close-issue-button text-danger" aria-hidden="true" title="Close Issue"></i>
+            </div>
+
+            <div class="col-md-6 col-xs-6 text-left">
+                <i class="fa fa-5x fa-check-circle-o keep-issue-button text-success" aria-hidden="true" title="Keep Issue Open"></i>
+            </div>
+        </div>
+    </div>
+</div>

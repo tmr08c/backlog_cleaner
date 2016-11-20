@@ -77,13 +77,16 @@ exports.config = {
         globals: {
             $: 'jquery',
             jQuery: 'jquery',
-            bootstrap: 'bootstrap-sass' // require bootstrap-sass' JavaScript globally
+            // require bootstrap-sass' JavaScript globally
+            bootstrap: 'bootstrap-sass',
+            Swing: 'swing'
         },
         whitelist: [
             "bootstrap",
             "jquery",
             "phoenix",
-            "phoenix_html"
+            "phoenix_html",
+            "swing"
         ]
     }
 };

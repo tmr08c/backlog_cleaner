@@ -53,9 +53,7 @@ defmodule BacklogCleaner.IssueController do
   end
 
   def delete(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
-    client = conn |> tentacat_client
-
-    case IssueManager.close(client, conn.assigns.current_user, owner, repo, number) do
+    case IssueManager.close(conn.assigns.access_token, conn.assigns.current_user, owner, repo, number) do
       {:ok} ->
         conn
         |> put_flash(:info, "Closing issue")

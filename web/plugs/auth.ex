@@ -39,8 +39,7 @@ defmodule BacklogCleaner.Plugs.Auth do
   """
   def login(conn, user, access_token) do
     conn
-  
-  |> put_session(:user_id, user.id)
+    |> put_session(:user_id, user.id)
     |> put_session(:access_token, access_token)
     |> configure_session(renew: true)
     |> Phoenix.Controller.redirect(to: "/")

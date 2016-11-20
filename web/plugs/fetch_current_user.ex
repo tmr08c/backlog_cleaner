@@ -22,11 +22,19 @@ defmodule BacklogCleaner.Plugs.FetchCurrentUser do
   defp set_current_user(conn) do
     user_id = get_session(conn, :user_id)
     user = user_id && Repo.get(User, user_id)
-    conn |> assign(:current_user, user)
+    user_id_token = Phoenix.Token.sign(conn, "user socket", user_id)
+
+    conn
+    |> assign(:current_user, user)
+    |> assign(:user_id_token, user_id_token)
   end
 
   defp set_access_token(conn) do
     access_token = conn |> get_session(:access_token)
-    conn |> assign(:access_token, access_token)
+    access_token_token = Phoenix.Token.sign(conn, "user socket", access_token)
+
+    conn
+    |> assign(:access_token, access_token)
+    |> assign(:access_token_token, access_token_token)
   end
 end

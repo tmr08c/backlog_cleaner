@@ -1,23 +1,24 @@
+.issues-list{
+    list-style-type: none;
+
+    li.issue{
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+
+        .panel-heading{
+            height: 150px;
+        }
+
+        .panel-body{
+            height: 350px;
+        }
+    }
+}
 
 .issue-body{
     overflow-x: scroll;
-}
-
-.issue-actions-wrapper{
-    margin-top: 75px;
-    margin-bottom: 25px;
-
-    .fa{
-        font-size: 100px;
-    }
-
-    .keep-issue-icon{
-        color: $brand-success;
-    }
-
-    .close-issue-icon{
-        color: $brand-danger;
-    }
 }
 
 .last-update-wrapper{

@@ -11,6 +11,10 @@
 
         <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
         <script src="https://use.fontawesome.com/304a124362.js"></script>
+        <script>
+             window.userIdToken = "<%= assigns[:user_id_token] %>";
+             window.accessTokenToken = "<%= assigns[:access_token_token] %>";
+        </script>
         <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
     </head>
 

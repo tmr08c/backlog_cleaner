@@ -10,7 +10,8 @@
     ),
     [
         {:to, issue_path(@conn, :keep, @owner, @repo, @number)},
-        {:aria, [label: "Keep Issue Open"]}
+        {:aria, [label: "Keep Issue Open"]},
+        {:class, "keep-issue-link"}
     ]
 )
 %>

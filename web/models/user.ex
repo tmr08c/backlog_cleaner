@@ -22,4 +22,8 @@ defmodule BacklogCleaner.User do
   def with_email(email) do
     from u in __MODULE__, where: u.email == ^email
   end
+
+  def get(id) do
+    from u in __MODULE__, where: u.id == ^id
+  end
 end

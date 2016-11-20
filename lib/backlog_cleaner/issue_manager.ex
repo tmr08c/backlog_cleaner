@@ -4,15 +4,17 @@ defmodule BacklogCleaner.IssueManager do
 
   @closed_state "closed"
 
-  def close(tentacat_client, user, repo_owner, repo_name, issue_number) do
-    with {:ok, _audit} <- AuditManager.create_close(user, repo_owner, repo_name, issue_number),
+  def close(access_token, user, repo_owner, repo_name, issue_number) do
+    with tentacat_client <- tentacat_client_for(access_token),
+         {:ok, _audit} <- AuditManager.create_close(user, repo_owner, repo_name, issue_number),
          {:ok, _issue} <- close_issue(tentacat_client, repo_owner, repo_name, issue_number),
          {201, _comment} <- create_comment(tentacat_client, repo_owner, repo_name, issue_number, close_comment_body(user)),
       do: {:ok}
   end
 
-  def keep(tentacat_client, user, repo_owner, repo_name, issue_number) do
-    with {:ok, _audit} <- AuditManager.create_keep(user, repo_owner, repo_name, issue_number),
+  def keep(access_token, user, repo_owner, repo_name, issue_number) do
+    with tentacat_client <- tentacat_client_for(access_token),
+         {:ok, _audit} <- AuditManager.create_keep(user, repo_owner, repo_name, issue_number),
          {201, _comment} <- create_comment(tentacat_client, repo_owner, repo_name, issue_number, keep_comment_body(user)),
     do: {:ok}
   end
@@ -48,5 +50,9 @@ defmodule BacklogCleaner.IssueManager do
 
   defp keep_comment_body(user) do
     "@#{user.username} detemined this issue is still valid using Backlog Cleaner" 
+  end
+
+  defp tentacat_client_for(access_token) do
+    Tentacat.Client.new(%{access_token: access_token})
   end
 end
