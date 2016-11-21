@@ -1,5 +1,8 @@
 <div class="panel panel-default">
     <div class="panel-heading">
+        <%= link(to: Map.get(@issue, "html_url"), class: "issue-link", target: "_blank") do %>
+            <i class="fa fa-external-link pull-right"></i>
+        <% end %>
         <h3 class="pangel-title">
             <%= Map.get(@issue, "title") %> 
         </h3>

@@ -11,6 +11,14 @@
     @include transform(rotate(#{$deg}deg));
 }
 
+.issue-link{
+    color: black;
+    &:hover{
+        color: black;
+        text-decoration: none;
+    }
+}
+
 .issues-list{
     list-style-type: none;
 
