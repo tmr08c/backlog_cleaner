@@ -1,3 +1,16 @@
+// generic transform
+@mixin transform($transforms) {
+	  -moz-transform: $transforms;
+	  -o-transform: $transforms;
+	  -ms-transform: $transforms;
+	  -webkit-transform: $transforms;
+    transform: $transforms;
+}
+// rotate
+@mixin rotate ($deg) {
+    @include transform(rotate(#{$deg}deg));
+}
+
 .issues-list{
     list-style-type: none;
 
@@ -12,7 +25,18 @@
         }
 
         .panel-body{
-            height: 350px;
+            height: 250px;
+        }
+        &:not(.hidden){
+            &:first-child{
+                @include rotate(2);
+            }
+            &:nth-child(2){
+                @include rotate(-2);
+            }
+            &:last-child{
+                @include rotate(0);
+            }
         }
     }
 }
