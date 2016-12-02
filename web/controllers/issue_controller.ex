@@ -12,8 +12,7 @@ defmodule BacklogCleaner.IssueController do
   #
   # We would need to be sure to rectify the cache against changes
   # probably via a webhook
-
-  def index(conn, %{ "owner" => owner, "repo" => repo } = params) do
+  def index(conn, %{ "owner" => owner, "repo" => repo }) do
     issues =
       conn
       |> tentacat_client
@@ -26,7 +25,7 @@ defmodule BacklogCleaner.IssueController do
     |> render("index.html")
   end
 
-  def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" } = params) do
+  def show(conn, %{ "owner" => owner, "repo" => repo, "number" => "random" }) do
     case conn
     |> tentacat_client
     |> IssueFinder.random_issue_number_for(owner, repo, conn.assigns.all) do
@@ -35,7 +34,7 @@ defmodule BacklogCleaner.IssueController do
     end
   end
 
-  def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
+  def show(conn, %{ "owner" => owner, "repo" => repo, "number" => number }) do
     issue = 
       conn
       |> tentacat_client
@@ -52,7 +51,7 @@ defmodule BacklogCleaner.IssueController do
     |> render("show.html")
   end
 
-  def delete(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
+  def delete(conn, %{ "owner" => owner, "repo" => repo, "number" => number }) do
     case IssueManager.close(conn.assigns.access_token, conn.assigns.current_user, owner, repo, number) do
       {:ok} ->
         conn
@@ -65,7 +64,7 @@ defmodule BacklogCleaner.IssueController do
     end
   end
 
-  def keep(conn, %{ "owner" => owner, "repo" => repo, "number" => number } = params) do
+  def keep(conn, %{ "owner" => owner, "repo" => repo, "number" => number }) do
     client = conn |> tentacat_client
 
     case IssueManager.keep(client, conn.assigns.current_user, owner, repo, number) do
