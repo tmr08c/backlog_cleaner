@@ -36,10 +36,10 @@
             height: 250px;
         }
         &:not(.hidden){
-            &:first-child{
+            &:nth-last-child(3){
                 @include rotate(2);
             }
-            &:nth-child(2){
+            &:nth-last-child(4){
                 @include rotate(-2);
             }
             &:last-child{

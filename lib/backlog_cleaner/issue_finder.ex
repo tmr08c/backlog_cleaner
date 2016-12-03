@@ -40,7 +40,7 @@ defmodule BacklogCleaner.IssueFinder do
   defp random_issue(issues), do: {:ok, Enum.random(issues)}
 
   defp open_issues_for(owner, repo, tentacat_client) do
-    Issues.filter(owner, repo, %{"sort" => "updated", "direction" => "asc"}, tentacat_client)
+    Issues.filter(owner, repo, %{"sort" => "updated", "direction" => "desc"}, tentacat_client)
   end
 
   defp managed_issue_numbers_for(owner, repo) do

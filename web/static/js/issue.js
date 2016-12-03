@@ -17,11 +17,11 @@ const MAX_STACK_SIZE = 5;
 
 export function convertToCard(channel) {
     let issues = $(CARD_CLASS);
-    let issuesToShow = [].slice.call(issues, 0, MAX_STACK_SIZE);
+    let issuesToShow = [].slice.call(issues, MAX_STACK_SIZE * -1);
     const stack = Swing.Stack(config);
 
     $(issuesToShow).removeClass("hidden");
-    createCard(issuesToShow[0], stack, channel);
+    createCard(issuesToShow[issuesToShow.length - 1], stack, channel);
     addStackListeners(stack, channel);
 };
 
@@ -66,7 +66,7 @@ function updateStack(stack, channel){
     createCard(nextIssueToMakeCard, stack, channel);
 
     // show the next hidden card
-    let nextIssue = $(HIDDEN_CARD_CLASS);
+    let nextIssue = $(`${HIDDEN_CARD_CLASS}:last`);
     if (nextIssue.length === 0) return;
     $(nextIssue).removeClass("hidden");
 }
