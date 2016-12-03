@@ -51,7 +51,7 @@
             </nav>
         </header>
 
-        <div class="container">
+        <div class="container" id="app-wrapper">
             <%= if get_flash(@conn, :info) do %>
                 <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
             <% end %>
